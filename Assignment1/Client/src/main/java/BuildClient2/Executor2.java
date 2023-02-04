@@ -21,7 +21,7 @@ public class Executor2 extends ExecutorAbstract {
             + "With %2$s successes and %3$s failures.\n"
             + "Throughput: %4$.2f\n"
             + "Mean response time: %5$.2f\n"
-            + "Median response time: %6$s\n"
+            + "Median response time: %6$.2f\n"
             + "99 percentile response time: %7$s\n"
             + "Minimum response time: %8$s\n"
             + "Maximum response time: %9$s\n",

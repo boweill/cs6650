@@ -41,7 +41,10 @@ public class MonitorThread extends Thread{
     return maxResponseTime;
   }
 
-  public int getMedianResponseTime() {
+  public double getMedianResponseTime() {
+    if (numOfRequests % 2 == 0) {
+      return (latencies[numOfRequests / 2] + latencies[numOfRequests / 2 - 1]) / 2.0;
+    }
     return latencies[numOfRequests / 2];
   }
 
