@@ -7,7 +7,6 @@ import java.util.Queue;
 
 public class MultiThreadedClient2 extends MultiThreadedClientAbstract {
 
-  private Thread[] threads;
   private MonitorThread monitorThread;
   private Queue<Record> recordQueue;
 
@@ -33,22 +32,15 @@ public class MultiThreadedClient2 extends MultiThreadedClientAbstract {
     return recordQueue.poll();
   }
 
+  @Override
   public void start() throws InterruptedException {
 
     monitorThread.start();
-    int numOfThreads = getNumOfThreads();
 
     long start = System.currentTimeMillis();
     monitorThread.setStart(start);
-    for (int i = 0; i < numOfThreads; i++) {
-      threads[i].start();
-    }
-
-    for (int i = 0; i < numOfThreads; i++) {
-      threads[i].join();
-    }
-
-    setTimeElapsed(System.currentTimeMillis() - start);
+    setStart(start);
+    super.start();
 
     monitorThread.join();
   }

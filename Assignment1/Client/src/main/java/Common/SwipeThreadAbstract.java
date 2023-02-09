@@ -9,7 +9,7 @@ import io.swagger.client.model.SwipeDetails;
 import java.util.Random;
 
 public abstract class SwipeThreadAbstract extends Thread {
-  private static final String serverBaseUrl = "http://35.80.96.92:8080/Server_war/";
+  private static final String SERVER_BASE_URL = "http://35.80.96.92:8080/Server_war/";
   private static final int MAX_IDLE_CONNECTION = 200;
   private static final long KEEP_ALIVE_DURATION_MS = 300000L;
   private static final int SWIPER_ID_UPPER_BOUND = 5000;
@@ -25,7 +25,7 @@ public abstract class SwipeThreadAbstract extends Thread {
     this.multiThreadedClientAbstract = multiThreadedClientAbstract;
     this.num = num;
     ApiClient apiClient = new ApiClient();
-    apiClient.setBasePath(serverBaseUrl);
+    apiClient.setBasePath(SERVER_BASE_URL);
     apiClient.setConnectTimeout(0);
     apiClient.setReadTimeout(0);
     apiClient.getHttpClient().setConnectionPool(new ConnectionPool(MAX_IDLE_CONNECTION, KEEP_ALIVE_DURATION_MS));

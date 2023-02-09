@@ -4,12 +4,15 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 public abstract class MultiThreadedClientAbstract {
 
+  protected Thread[] threads;
+  private long start;
   private long timeElapsed;
   private int numOfThreads;
   private int numOfRequests;
   private int processedRequests;
   private AtomicInteger successfulRequests;
   private AtomicInteger failedRequests;
+  private double throughput;
 
   public MultiThreadedClientAbstract(int numOfThreads, int numOfRequests) {
     this.numOfThreads = numOfThreads;
@@ -38,8 +41,6 @@ public abstract class MultiThreadedClientAbstract {
     failedRequests.incrementAndGet();
   }
 
-  public abstract void start() throws InterruptedException;
-
   public long getTimeElapsed() {
     return timeElapsed;
   }
@@ -62,5 +63,34 @@ public abstract class MultiThreadedClientAbstract {
 
   public int getNumOfThreads() {
     return numOfThreads;
+  }
+
+  public double getThroughput() {
+    return throughput;
+  }
+
+  public void setThroughput(double throughput) {
+    this.throughput = throughput;
+  }
+
+  public long getStart() {
+    return start;
+  }
+
+  public void setStart(long start) {
+    this.start = start;
+  }
+
+  public void start() throws InterruptedException {
+    for (int i = 0; i < numOfThreads; i++) {
+      threads[i].start();
+    }
+
+    for (int i = 0; i < numOfThreads; i++) {
+      threads[i].join();
+    }
+
+    setTimeElapsed(System.currentTimeMillis() - start);
+    setThroughput(getNumOfRequests() * 1000.0 / getTimeElapsed());
   }
 }
