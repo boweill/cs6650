@@ -24,6 +24,6 @@ public class Executor extends ExecutorAbstract {
         successfulRequests,
         failedRequests,
         throughput,
-        multiThreadedClient.getNumOfRequests()));
+        multiThreadedClient.getNumOfThreads()));
   }
 }
