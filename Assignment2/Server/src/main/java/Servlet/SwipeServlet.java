@@ -5,35 +5,35 @@ import Bean.SwipeDetails;
 import QueueUtils.RMQChannelFactory;
 import QueueUtils.RMQChannelPool;
 import com.google.gson.Gson;
+import com.rabbitmq.client.AMQP;
+import com.rabbitmq.client.BuiltinExchangeType;
+import com.rabbitmq.client.Channel;
 import java.io.IOException;
-import java.util.concurrent.Executor;
-import java.util.concurrent.Executors;
+import java.nio.charset.StandardCharsets;
 import javax.servlet.*;
 import javax.servlet.annotation.*;
 import javax.servlet.http.*;
 
-import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
-import java.io.IOException;
-
-import java.nio.charset.StandardCharsets;
 import java.util.concurrent.TimeoutException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 @WebServlet(name = "Servlet.SwipeServlet", value = "/Servlet.SwipeServlet")
 public class SwipeServlet extends HttpServlet {
-  public final static String QUEUE_NAME = "threadExQ";
+  public final static String EXCHANGE_NAME = "exchange";
+  public final static String QUEUE1_NAME = "threadExQ3";
+  public final static String QUEUE2_NAME = "threadExQ4";
+
+  private final static int CHANNEL_POOL_SIZE = 100;
   private Connection conn;
-  private Executor threadPool;
   private RMQChannelPool channelPool;
 
   @Override
   public void init() throws ServletException {
     super.init();
-    threadPool = Executors.newFixedThreadPool(5);
     ConnectionFactory factory = new ConnectionFactory();
+    // Establish RabbitMQ connection with following info.
+    // Modify here if needed.
     factory.setHost("52.26.252.125");
     factory.setVirtualHost("/");
     factory.setUsername("admin");
@@ -44,7 +44,7 @@ public class SwipeServlet extends HttpServlet {
       System.err.println("Unable to connect to Queue : " + ex.getMessage());
     }
     RMQChannelFactory channelFactory = new RMQChannelFactory(conn);
-    channelPool = new RMQChannelPool(5, channelFactory);
+    channelPool = new RMQChannelPool(CHANNEL_POOL_SIZE, channelFactory);
   }
 
   // To be implemented in future assignments
@@ -97,6 +97,9 @@ public class SwipeServlet extends HttpServlet {
       swiper = swipeDetails.getSwiper();
       swipee = swipeDetails.getSwipee();
       message = swipeDetails.getMessage();
+      Boolean like = urlParts[1].equals("right") ? true : false;
+      swipeDetails.setLike(like);
+      swipeDetailsJson = gson.toJson(swipeDetails);
 
       // Must have swiper and swipee
       if (swiper == null || swipee == null) {
@@ -116,12 +119,32 @@ public class SwipeServlet extends HttpServlet {
       return;
     }
 
-    threadPool.execute(new PublisherRunnable(channelPool, swipeDetailsJson));
+    try {
+      // borrow a channel from our channel pool.
+      Channel channel = channelPool.borrowObject();
+
+      // declare a fanout exchange to send messages to queues for both consumers.
+      channel.exchangeDeclare(SwipeServlet.EXCHANGE_NAME, BuiltinExchangeType.FANOUT);
+
+      byte[] payloadBytes = swipeDetailsJson.getBytes(StandardCharsets.UTF_8);
+      AMQP.BasicProperties props = new AMQP.BasicProperties.Builder().contentType("application/json").build();
+
+      // publishing the message to the fanout exchange.
+      channel.basicPublish(SwipeServlet.EXCHANGE_NAME, "", props, payloadBytes);
+
+      // returning channel and print out a confirmation message.
+      channelPool.returnObject(channel);
+      System.out.println(" [x] Sent '" + swipeDetailsJson + "'");
+    } catch (Exception e) {
+      e.printStackTrace();
+      return;
+    }
+
     // We get response like "User 123 liked user 456" upon successful request
-    String action = urlParts[1].equals("right") ? "liked" : "disliked";
+    String action = swipeDetails.getLike() ? "liked" : "disliked";
     res.setStatus(HttpServletResponse.SC_CREATED);
 
-    res.getWriter().write(String.format("User %1$s %2$s user %3$s.", swiper, action, swipee));
+    res.getWriter().write(String.format("User %1$s %2$s user %3$s. -v19", swiper, action, swipee));
   }
 
   private boolean isUrlValid(String[] urlParts) {

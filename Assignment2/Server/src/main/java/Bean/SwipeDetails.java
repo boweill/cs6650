@@ -6,6 +6,7 @@ public class SwipeDetails {
   private String swiper;
   private String swipee;
   private String message;
+  private Boolean like;
 
   public String getSwiper() {
     return swiper;
@@ -31,6 +32,14 @@ public class SwipeDetails {
     this.message = message;
   }
 
+  public Boolean getLike() {
+    return like;
+  }
+
+  public void setLike(Boolean like) {
+    this.like = like;
+  }
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -41,11 +50,11 @@ public class SwipeDetails {
     }
     SwipeDetails that = (SwipeDetails) o;
     return swiper.equals(that.swiper) && swipee.equals(that.swipee) && Objects.equals(
-        message, that.message);
+        message, that.message) && like.equals(that.like);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(swiper, swipee, message);
+    return Objects.hash(swiper, swipee, message, like);
   }
 }

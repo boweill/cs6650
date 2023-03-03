@@ -1,19 +1,17 @@
 package QueueUtils;
 
 /**
- *
+ * (Reference Code from text book Ch 7)
  * @author Ian Gorton, Northeastern University
  * The examples supplement Chapter 7 of the Foundations of Scalable Systems, O'Reilly Media 2022
  */
 
 import com.rabbitmq.client.Channel;
-import org.apache.commons.pool2.ObjectPool;
 import java.io.IOException;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.apache.commons.pool2.impl.GenericObjectPool;
 
 
 /**

@@ -1,0 +1,5 @@
+QueueUtils/RMQChannelPool.class
+QueueUtils/RMQChannelFactory.class
+Bean/SwipeDetails.class
+Bean/ResponseMsg.class
+Servlet/SwipeServlet.class
