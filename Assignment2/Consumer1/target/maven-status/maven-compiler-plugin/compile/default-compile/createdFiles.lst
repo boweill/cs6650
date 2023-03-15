@@ -1,0 +1,4 @@
+Handler/LikeHandlerRunnable.class
+Bean/SwipeDetails.class
+Bean/DataAggregator.class
+Consumer/LikeConsumer.class
