@@ -1,0 +1,6 @@
+Handler/LikeHandlerRunnable.class
+Bean/SwipeDetails.class
+Consumer/LikeConsumer.class
+Bean/DynamoDBHandler.class
+Bean/DataWriter.class
+Bean/User.class
