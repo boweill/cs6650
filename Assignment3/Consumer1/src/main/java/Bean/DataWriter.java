@@ -23,7 +23,7 @@ public class DataWriter {
     this.mapper = new DynamoDBMapper(ddb);
   }
 
-  public void handleSwipeDetails(SwipeDetails swipeDetails) {
+  public synchronized void handleSwipeDetails(SwipeDetails swipeDetails) {
     long start = System.currentTimeMillis();
     String swiper = swipeDetails.getSwiper();
     String swipee = swipeDetails.getSwipee();
@@ -87,7 +87,7 @@ public class DataWriter {
     System.out.println("latency: " + latency);
   }
 
-  public void batchProcess(Map<String, User> userMap) {
+  public synchronized void batchProcess(Map<String, User> userMap) {
     // Set of users that have been updated in this batch
     Set<String> updatedUsers = userMap.keySet();
 
